@@ -1,0 +1,4 @@
+node_modules/
+package-lock.json
+project2.env
+__pycache__
