@@ -6,7 +6,8 @@ from dotenv import load_dotenv
 import flask_sqlalchemy
 import models
 import requests
-import botbuild
+import botMessage as bot
+import botbuild as botcommand
 import urlparse
 from flask import request
 
@@ -96,9 +97,9 @@ def on_new_number(data):
         db.session.commit();
     emit_all_messages(MESSAGE_RECEIVED_CHANNEL)
     #code to see if the message was a bot, if was figure out response and send it back
-    if(new_message[:2]=="!!"):
-        bCR=botbuild.chatBot(new_message)
-        db.session.add(models.Chat('bot',bCR.botStuff()));
+    botMessage=bot.validMessage(new_message)
+    if(botMessage["KEY_IS_BOT"]):
+        db.session.add(models.Chat('bot',botcommand.botCommandParse(botMessage["KEY_BOT_COMMAND"],botMessage["KEY_MESSAGE"])));
         db.session.commit();
         emit_all_messages(MESSAGE_RECEIVED_CHANNEL)    
 
