@@ -61,16 +61,16 @@ class BotbuildTestCase(unittest.TestCase):
                 KEY_INPUT: "!!help",
                 KEY_EXPECTED: {
                     KEY_IS_BOT: False,
-                    KEY_BOT_COMMAND: "help",
-                    KEY_MESSAGE: "",
+                    KEY_BOT_COMMAND: "hel",
+                    KEY_MESSAGE: "a",
                 }
             },
             {
-                KEY_INPUT: "!about me",
+                KEY_INPUT: "!!about me",
                 KEY_EXPECTED: {
-                    KEY_IS_BOT: True,
-                    KEY_BOT_COMMAND: None,
-                    KEY_MESSAGE: "!about me",
+                    KEY_IS_BOT: False,
+                    KEY_BOT_COMMAND: "about",
+                    KEY_MESSAGE: "me",
                 }
             },
             {
@@ -84,8 +84,8 @@ class BotbuildTestCase(unittest.TestCase):
             {
                 KEY_INPUT: "!!funtranslate abced",
                 KEY_EXPECTED: {
-                    KEY_IS_BOT: True,
-                    KEY_BOT_COMMAND: "funtranslate",
+                    KEY_IS_BOT: False,
+                    KEY_BOT_COMMAND: "funtranslated",
                     KEY_MESSAGE: "",
                 }
             },
@@ -93,8 +93,8 @@ class BotbuildTestCase(unittest.TestCase):
                 KEY_INPUT: "!!joke",
                 KEY_EXPECTED: {
                     KEY_IS_BOT: False,
-                    KEY_BOT_COMMAND: "joke",
-                    KEY_MESSAGE: "",
+                    KEY_BOT_COMMAND: "poke",
+                    KEY_MESSAGE: "e",
                 }
             }
         ]
@@ -104,19 +104,14 @@ class BotbuildTestCase(unittest.TestCase):
         for test in self.success_test_params:
             response = validMessage.validMessage(test[KEY_INPUT])
             expected = test[KEY_EXPECTED]
+            self.assertDictEqual(response,expected)
             
-            self.assertEqual(response[KEY_IS_BOT], expected[KEY_IS_BOT])
-            self.assertEqual(response[KEY_BOT_COMMAND], expected[KEY_BOT_COMMAND])
-            self.assertEqual(response[KEY_MESSAGE], expected[KEY_MESSAGE])
-            
-    # def test_parse_message_failure(self):
-    #     for test in self.failure_test_params:
-    #         response = validMessage.validMessage(test[KEY_INPUT])
-    #         expected = test[KEY_EXPECTED]
-            
-    #         self.assertNotEqual(response[KEY_IS_BOT], expected[KEY_IS_BOT])
-    #         self.assertNotEqual(response[KEY_BOT_COMMAND], expected[KEY_BOT_COMMAND])
-    #         self.assertNotEqual(response[KEY_MESSAGE], expected[KEY_MESSAGE])
+    def test_parse_message_failure(self):
+        for test in self.failure_test_params:
+            response = validMessage.validMessage(test[KEY_INPUT])
+            expected = test[KEY_EXPECTED]
+
+            self.assertNotEqual(response[KEY_IS_BOT], expected[KEY_IS_BOT])
 
 
 if __name__ == '__main__':
