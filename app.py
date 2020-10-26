@@ -89,10 +89,10 @@ def on_new_message(data):
     emit_all_messages(MESSAGE_RECEIVED_CHANNEL)
     #code to see if the message was a bot, if was figure out response and send it back
     bot_message = bot.valid_message(new_message)
-    if bot_message["KEY_IS_BOT"]:
+    if bot_message["is_bot"]==True:
         DB.session.add(models.Chat('bot',\
-        botcommand.bot_command_parse(bot_message["KEY_BOT_COMMAND"],\
-        bot_message["KEY_MESSAGE"])))
+        botcommand.bot_command_parse(bot_message["bot_command"],\
+        bot_message["message"])))
         DB.session.commit()
         emit_all_messages(MESSAGE_RECEIVED_CHANNEL)
 
