@@ -1,3 +1,4 @@
+'''this is the main driver file'''
 import os
 import flask
 import flask_socketio
@@ -5,129 +6,115 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 import flask_sqlalchemy
 import models
-import requests
 import botMessage as bot
 import botbuild as botcommand
 import urlparse
 from flask import request
+import ConnectedUsers
 
-#newpsuh
-
+LIST_OF_CONNECTED_USERS = ConnectedUsers.Connected()
 MESSAGE_RECEIVED_CHANNEL = 'message received'
-USER_UPDATE_CHANNEL='user updated'
+USER_UPDATE_CHANNEL = 'user updated'
 
-app = flask.Flask(__name__)
+APP = flask.Flask(__name__)
 
-socketio = flask_socketio.SocketIO(app)
-socketio.init_app(app, cors_allowed_origins="*")
+SOCKETIO = flask_socketio.SocketIO(APP)
+SOCKETIO.init_app(APP, cors_allowed_origins="*")
 
-dotenv_path = join(dirname(__file__), 'project2.env')
-load_dotenv(dotenv_path)
+DOTENV_PATH = join(dirname(__file__), 'project2.env')
+load_dotenv(DOTENV_PATH)
 
-database_uri = os.environ['DATABASE_URL']
+DATABASE_URI = os.environ['DATABASE_URL']
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
+APP.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 
-db = flask_sqlalchemy.SQLAlchemy(app)
-db.init_app(app)
-db.app = app
+DB = flask_sqlalchemy.SQLAlchemy(APP)
+DB.init_app(APP)
+DB.app = APP
 
-db.create_all()
-db.session.commit()
+DB.create_all()
+DB.session.commit()
 
-userCount=0
-users=[]
+
 
 def emit_all_messages(channel):
-    all_messages = [ \
-        db_message.message for db_message \
-        in db.session.query(models.Chat).all()]
-    all_names =[\
-        db_name.name for db_name in db.session.query(models.Chat).all() ] 
-    
-    arrayList=[]
-    for x in range(len(all_messages)):
-        messageOp=all_names[x]
-        messageOp+= ": "
-        messageOp+=all_messages[x]
-        arrayList.append(messageOp)
-    socketio.emit(channel, {
-        'allMessages': arrayList
+    '''Send all of the messages out.'''
+    db_all_messages = [db_message.message for db_message in DB.session.query(models.Chat).all()]
+    db_all_names = [db_name.name for db_name in DB.session.query(models.Chat).all()]
+    list_of_messages = []
+    for current_message in range(len(db_all_messages)):
+        message_to_append = db_all_names[current_message]
+        message_to_append += ": "
+        message_to_append += db_all_messages[current_message]
+        list_of_messages.append(message_to_append)
+    SOCKETIO.emit(channel, {
+        'allMessages': list_of_messages
     })
-    
-
 def emit_num_users(channel):
-    userCount=len(users)
-    socketio.emit(channel, {
-        'number': userCount
+    '''Send the number of users out.'''
+    user_count = LIST_OF_CONNECTED_USERS.numberOfUsers()
+    SOCKETIO.emit(channel, {
+        'number': user_count
     })
-    
-
-@socketio.on('connect')
+@SOCKETIO.on('connect')
 def on_connect():
-    socketio.emit('connected', {
+    '''When a user connects.'''
+    SOCKETIO.emit('connected', {
         'test': 'Connected'
     })
     emit_all_messages(MESSAGE_RECEIVED_CHANNEL)
     emit_num_users(USER_UPDATE_CHANNEL)
-    
-@socketio.on('disconnect')
+@SOCKETIO.on('disconnect')
 def on_disconnect():
-    global users
-    users = list(filter(lambda i: i['userid'] != request.sid, users)) 
+    '''When a user disconects.'''
+    LIST_OF_CONNECTED_USERS.deleteUser(request.sid)
     emit_num_users(USER_UPDATE_CHANNEL)
-
-@socketio.on('new message')
-def on_new_number(data):
-    print("Got an event for new number with data:", data)
-    roomid=request.sid
+@SOCKETIO.on('new message')
+def on_new_message(data):
+    ''' Get new message from person parse it for url,
+     make sure the person is online, and make sure its
+     a bot message or not.'''
+    room_id = request.sid
     new_message = data['message']['message']
-    if not any(d['userid']==request.sid for d in users):
-            errorz="There was an error please make sure you are logged in."
-            print('inside senderror')
-            socketio.emit('messageError', { 
-            'errormessage': errorz
-            },room=roomid)
+    user_name = LIST_OF_CONNECTED_USERS.checkForUser(room_id)
+    if user_name == "":
+        error_message = "There was an error please make sure you are logged in."
+        SOCKETIO.emit('messageError', {'errormessage': error_message}, room=room_id)
     else:
-        urlCheck=urlparse.urlParse(new_message)
-        new_message=urlCheck.checkURL()
-        res = next((sub for sub in users if sub['userid'] == request.sid), None)
-        db.session.add(models.Chat(res.get("name"),new_message));
-        db.session.commit();
+        url_check = urlparse.urlParse(new_message)
+        new_message = url_check.checkURL()
+        DB.session.add(models.Chat(user_name, new_message))
+        DB.session.commit()
     emit_all_messages(MESSAGE_RECEIVED_CHANNEL)
     #code to see if the message was a bot, if was figure out response and send it back
-    botMessage=bot.validMessage(new_message)
-    if(botMessage["KEY_IS_BOT"]):
-        db.session.add(models.Chat('bot',botcommand.botCommandParse(botMessage["KEY_BOT_COMMAND"],botMessage["KEY_MESSAGE"])));
-        db.session.commit();
-        emit_all_messages(MESSAGE_RECEIVED_CHANNEL)    
+    bot_message = bot.validMessage(new_message)
+    if bot_message["KEY_IS_BOT"]:
+        DB.session.add(models.Chat('bot',\
+        botcommand.botCommandParse(bot_message["KEY_BOT_COMMAND"],\
+        bot_message["KEY_MESSAGE"])))
+        DB.session.commit()
+        emit_all_messages(MESSAGE_RECEIVED_CHANNEL)
 
-@socketio.on('new google user')
+@SOCKETIO.on('new google user')
 def on_new_google_user(data):
-    print("Got an event for new google user input with data:", data)
-    users.append({'userid': request.sid, 'name':data['name']})
+    '''When a new user connects through google.'''
+    LIST_OF_CONNECTED_USERS.addUser(request.sid, data['name'])
     emit_num_users(USER_UPDATE_CHANNEL)
-    socketio.emit('profilePic',{
-        'profPicture': data['profilepic']
-    },room=request.sid)
-    socketio.emit('messageError', { 
-        'errormessage': ''
-            },room=request.sid)
-    socketio.emit('UserLogedIn', { 
-        'loggedinbro': 'logedin'
-            },room=request.sid)
+    SOCKETIO.emit('profilePic', {'profPicture': data['profilepic']}, room=request.sid)
+    SOCKETIO.emit('messageError', {'errormessage': ''}, room=request.sid)
+    SOCKETIO.emit('UserLogedIn', {'loggedinbro': 'logedin'}, room=request.sid)
 
-@app.route('/')
+@APP.route('/')
 def index():
+    '''Flask to run the program and load the html'''
     emit_all_messages(MESSAGE_RECEIVED_CHANNEL)
-    
     return flask.render_template('index.html')
 
 
-if __name__ == '__main__': 
-    socketio.run(
-        app,
+if __name__ == '__main__':
+    SOCKETIO.run(
+        APP,
         host=os.getenv('IP', '0.0.0.0'),
         port=int(os.getenv('PORT', 8080)),
         debug=True
