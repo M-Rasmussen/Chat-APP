@@ -102,13 +102,13 @@ class BotbuildTestCase(unittest.TestCase):
 
     def test_parse_message_success(self):
         for test in self.success_test_params:
-            response = validMessage.validMessage(test[KEY_INPUT])
+            response = validMessage.valid_message(test[KEY_INPUT])
             expected = test[KEY_EXPECTED]
             self.assertDictEqual(response,expected)
             
     def test_parse_message_failure(self):
         for test in self.failure_test_params:
-            response = validMessage.validMessage(test[KEY_INPUT])
+            response = validMessage.valid_message(test[KEY_INPUT])
             expected = test[KEY_EXPECTED]
 
             self.assertNotEqual(response[KEY_IS_BOT], expected[KEY_IS_BOT])

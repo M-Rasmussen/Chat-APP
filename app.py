@@ -6,13 +6,13 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 import flask_sqlalchemy
 import models
-import botMessage as bot
-import botbuild as botcommand
+import bot_message as bot
+import bot_build as botcommand
 import urlparse
 from flask import request
-import ConnectedUsers
+import connected_users
 
-LIST_OF_CONNECTED_USERS = ConnectedUsers.Connected()
+LIST_OF_CONNECTED_USERS = connected_users.Connected()
 MESSAGE_RECEIVED_CHANNEL = 'message received'
 USER_UPDATE_CHANNEL = 'user updated'
 
@@ -53,7 +53,7 @@ def emit_all_messages(channel):
     })
 def emit_num_users(channel):
     '''Send the number of users out.'''
-    user_count = LIST_OF_CONNECTED_USERS.numberOfUsers()
+    user_count = LIST_OF_CONNECTED_USERS.number_of_users()
     SOCKETIO.emit(channel, {
         'number': user_count
     })
@@ -68,7 +68,7 @@ def on_connect():
 @SOCKETIO.on('disconnect')
 def on_disconnect():
     '''When a user disconects.'''
-    LIST_OF_CONNECTED_USERS.deleteUser(request.sid)
+    LIST_OF_CONNECTED_USERS.delete_user(request.sid)
     emit_num_users(USER_UPDATE_CHANNEL)
 @SOCKETIO.on('new message')
 def on_new_message(data):
@@ -77,7 +77,7 @@ def on_new_message(data):
      a bot message or not.'''
     room_id = request.sid
     new_message = data['message']['message']
-    user_name = LIST_OF_CONNECTED_USERS.checkForUser(room_id)
+    user_name = LIST_OF_CONNECTED_USERS.check_for_user(room_id)
     if user_name == "":
         error_message = "There was an error please make sure you are logged in."
         SOCKETIO.emit('messageError', {'errormessage': error_message}, room=room_id)
@@ -88,10 +88,10 @@ def on_new_message(data):
         DB.session.commit()
     emit_all_messages(MESSAGE_RECEIVED_CHANNEL)
     #code to see if the message was a bot, if was figure out response and send it back
-    bot_message = bot.validMessage(new_message)
+    bot_message = bot.valid_message(new_message)
     if bot_message["KEY_IS_BOT"]:
         DB.session.add(models.Chat('bot',\
-        botcommand.botCommandParse(bot_message["KEY_BOT_COMMAND"],\
+        botcommand.bot_command_parse(bot_message["KEY_BOT_COMMAND"],\
         bot_message["KEY_MESSAGE"])))
         DB.session.commit()
         emit_all_messages(MESSAGE_RECEIVED_CHANNEL)
@@ -99,7 +99,7 @@ def on_new_message(data):
 @SOCKETIO.on('new google user')
 def on_new_google_user(data):
     '''When a new user connects through google.'''
-    LIST_OF_CONNECTED_USERS.addUser(request.sid, data['name'])
+    LIST_OF_CONNECTED_USERS.add_user(request.sid, data['name'])
     emit_num_users(USER_UPDATE_CHANNEL)
     SOCKETIO.emit('profilePic', {'profPicture': data['profilepic']}, room=request.sid)
     SOCKETIO.emit('messageError', {'errormessage': ''}, room=request.sid)
