@@ -11,29 +11,30 @@ DOTENV_PATH = join(dirname(__file__), 'project2.env')
 load_dotenv(DOTENV_PATH)
 RAPID_API_HOST = os.environ['RAPID_URL_HOST']
 RAPID_API_KEY = os.environ['RAPID_URL_KEY']
+MESSAGE_TO_RETURN = "RETURN MESSAGE"
 
 def bot_command_parse(bot_command_input, bot_command_message):
     '''Get the message that will be added to the database.'''
-    message_to_return = "I did not understand you please enter !! help for all of \
+    MESSAGE_TO_RETURN = "I did not understand you please enter !! help for all of \
     the inputs I respond to"
     if bot_command_message == "":
         if bot_command_input == "about":
-            message_to_return = "I tell jokes, flip coins, and translate your language \
+            MESSAGE_TO_RETURN = "I tell jokes, flip coins, and translate your language \
             into high valyrian. Just put !! infront of the commands and I will \
             return as you please. For more information enter !!help"
         elif bot_command_input == "help":
-            message_to_return = "!! about and I will tell you about me. !! funtranslate \
+            MESSAGE_TO_RETURN = "!! about and I will tell you about me. !! funtranslate \
             (words), will translate anything after that into high valyrian. \
             !! joke and I will tell you a joke. !! coin flip will result me \
             in flipping a coin and I will tell you the results. "
         elif bot_command_input == "joke":
-            message_to_return = get_joke()
+            MESSAGE_TO_RETURN = get_joke()
     else:
         if bot_command_input == "funtranslate":
-            message_to_return = funtranslate(bot_command_message)
+            MESSAGE_TO_RETURN = funtranslate(bot_command_message)
         elif bot_command_input == "coin":
-            message_to_return = flipcoins()
-    return message_to_return
+            MESSAGE_TO_RETURN = flipcoins()
+    return MESSAGE_TO_RETURN
 
 def get_joke():
     '''Get api Joke.'''
