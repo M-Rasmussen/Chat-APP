@@ -10,8 +10,8 @@ from dotenv import load_dotenv
 import os
 from os.path import join, dirname
 
-KEY_INPUT="input"
-KEY_EXPECTED="expected"
+KEY_INPUT = "input"
+KEY_BOT_RESPONSE = "expected"
 
 class MockedBotInput:
     def __init__(self, bot_command_input, bot_command_message):
@@ -26,6 +26,12 @@ class BotBuildTestCase(unittest.TestCase):
     def setUp(self):
         self.success_test_params = [
             {
-                KEY_INPUT:
+                KEY_INPUT: "!!help",
+                KEY_EXPECTED:{
+                    KEY_BOT_RESPONSE: "I tell jokes, flip coins, and translate your language \
+                                        into high valyrian. Just put !! infront of the commands and I will \
+                                        return as you please. For more information enter !!help"
+                    
+                }
             }
             ]
