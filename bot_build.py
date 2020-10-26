@@ -11,41 +11,42 @@ DOTENV_PATH = join(dirname(__file__), 'project2.env')
 load_dotenv(DOTENV_PATH)
 RAPID_API_HOST = os.environ['RAPID_URL_HOST']
 RAPID_API_KEY = os.environ['RAPID_URL_KEY']
-MESSAGE_TO_RETURN = "RETURN MESSAGE"
+KEY_BOT_RESPONSE = "bot_response"
 
 def bot_command_parse(bot_command_input, bot_command_message):
     '''Get the message that will be added to the database.'''
-    MESSAGE_TO_RETURN = "I did not understand you please enter !! help for all of \
+    bot_return_message = "I did not understand you please enter !! help for all of \
     the inputs I respond to"
     if bot_command_message == "":
         if bot_command_input == "about":
-            MESSAGE_TO_RETURN = "I tell jokes, flip coins, and translate your language \
+            bot_return_message = "I tell jokes, flip coins, and translate your language \
             into high valyrian. Just put !! infront of the commands and I will \
             return as you please. For more information enter !!help"
         elif bot_command_input == "help":
-            MESSAGE_TO_RETURN = "!! about and I will tell you about me. !! funtranslate \
+            bot_return_message = "!! about and I will tell you about me. !! funtranslate \
             (words), will translate anything after that into high valyrian. \
             !! joke and I will tell you a joke. !! coin flip will result me \
             in flipping a coin and I will tell you the results. "
         elif bot_command_input == "joke":
-            MESSAGE_TO_RETURN = get_joke()
+            bot_return_message = get_joke()
     else:
         if bot_command_input == "funtranslate":
-            MESSAGE_TO_RETURN = funtranslate(bot_command_message)
+            bot_return_message = funtranslate(bot_command_message)
         elif bot_command_input == "coin":
-            MESSAGE_TO_RETURN = flipcoins()
-    return MESSAGE_TO_RETURN
+            bot_return_message = flipcoins()
+    return{
+        KEY_BOT_RESPONSE: bot_return_message}
 
 def get_joke():
     '''Get api Joke.'''
-    urledz = "https://joke3.p.rapidapi.com/v1/joke"
-    headerzed = {
+    joke_url = "https://joke3.p.rapidapi.com/v1/joke"
+    joke_header = {
         'x-rapidapi-host': RAPID_API_HOST,
         'x-rapidapi-key': RAPID_API_KEY
     }
-    responsezed = requests.request("GET", urledz, headers=headerzed)
-    jokereturn = responsezed.json()
-    fun_joke = (json.dumps(jokereturn["content"], indent=2))
+    joke_response = requests.request("GET", joke_url, headers=joke_header)
+    joke_parsed = joke_response.json()
+    fun_joke = (json.dumps(joke_parsed["content"], indent=2))
     return fun_joke
 #Use fun translate API
 def funtranslate(translate_words):
