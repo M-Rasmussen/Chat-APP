@@ -48,7 +48,7 @@ def bot_command_parse(bot_command_input, bot_command_message):
 
 def get_joke(joke_url, joke_header):
     '''Get api Joke.'''
-    joke_response = requests.get(joke_url, headers=joke_header).json
+    joke_response = requests.get(joke_url, headers=joke_header).json()
     joke = joke_response.get('content')
     return{KEY_RESPONSE: joke}
 
@@ -60,9 +60,7 @@ def funtranslate(translate_words):
     '''API translate of words.'''
     funurl = "http://api.funtranslations.com/translate/valyrian?text="
     funurl += translate_words
-    funpayload = {}
-    funheaders = {}
-    funresponse = requests.request("GET", funurl, headers=funheaders, data=funpayload)
+    funresponse = requests.get(funurl)
     funreturn = funresponse.json()
     fun_pirate = (json.dumps(funreturn["contents"]["translated"], indent=2))
     return fun_pirate

@@ -1,7 +1,7 @@
 import unittest
 import sys
 sys.path.append('../')
-from bot_build import get_joke, bot_command_parse 
+from bot_build import get_joke, funtranslate, bot_command_parse 
 from bot_build import JOKE_URL, JOKE_HEADER, KEY_RESPONSE
 
 #from bot_build import MESSAGE_TO_RETURN, KEY_RESPONSE
@@ -18,9 +18,7 @@ from os.path import join, dirname
 KEY_INPUT = "input"
 KEY_EXPECTED = "expected"
 
-# joke_response = requests.get(JOKE_URL, headers=JOKE_HEADER)
-# joke_response.raise_for_status()
-# print (joke_response.content)
+
 
 
 class MockedBotInput:
@@ -32,7 +30,6 @@ class MockedBotResponse:
     def __init__(self, bot_response):
         self.bot_response = bot_response
 
-    
 class MockedGetJokeResponse:
     def __init__(self, text):
         self.text= text

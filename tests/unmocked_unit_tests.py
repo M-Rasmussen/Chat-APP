@@ -1,8 +1,8 @@
 import unittest
 import sys
 sys.path.append('../')
-import botMessage as validMessage
-from botMessage import KEY_IS_BOT, KEY_BOT_COMMAND, KEY_MESSAGE
+import bot_message as valid_message
+from bot_message import KEY_IS_BOT, KEY_BOT_COMMAND, KEY_MESSAGE
 
 
 KEY_INPUT = "input"
@@ -102,13 +102,13 @@ class BotbuildTestCase(unittest.TestCase):
 
     def test_parse_message_success(self):
         for test in self.success_test_params:
-            response = validMessage.valid_message(test[KEY_INPUT])
+            response = valid_message.valid_message(test[KEY_INPUT])
             expected = test[KEY_EXPECTED]
             self.assertDictEqual(response,expected)
             
     def test_parse_message_failure(self):
         for test in self.failure_test_params:
-            response = validMessage.valid_message(test[KEY_INPUT])
+            response = valid_message.valid_message(test[KEY_INPUT])
             expected = test[KEY_EXPECTED]
 
             self.assertNotEqual(response[KEY_IS_BOT], expected[KEY_IS_BOT])
