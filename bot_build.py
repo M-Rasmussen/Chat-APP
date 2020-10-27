@@ -9,9 +9,15 @@ import requests
 
 DOTENV_PATH = join(dirname(__file__), 'project2.env')
 load_dotenv(DOTENV_PATH)
+JOKE_URL= 'https://joke3.p.rapidapi.com/v1/joke'
 RAPID_API_HOST = os.environ['RAPID_URL_HOST']
 RAPID_API_KEY = os.environ['RAPID_URL_KEY']
+JOKE_HEADER = {
+    'x-rapidapi-host': RAPID_API_HOST,
+    'x-rapidapi-key': RAPID_API_KEY
+    }
 KEY_BOT_RESPONSE = "bot_response"
+KEY_RESPONSE= "response"
 
 def bot_command_parse(bot_command_input, bot_command_message):
     '''Get the message that will be added to the database.'''
@@ -28,7 +34,8 @@ def bot_command_parse(bot_command_input, bot_command_message):
             !! joke and I will tell you a joke. !! coin flip will result me \
             in flipping a coin and I will tell you the results. "
         elif bot_command_input == "joke":
-            bot_return_message = get_joke()
+            x=get_joke(JOKE_URL,JOKE_HEADER)
+            bot_return_message = x.get(KEY_RESPONSE)
     else:
         if bot_command_input == "funtranslate":
             bot_return_message = funtranslate(bot_command_message)
@@ -37,17 +44,17 @@ def bot_command_parse(bot_command_input, bot_command_message):
     return{
         KEY_BOT_RESPONSE: bot_return_message}
 
-def get_joke():
+
+
+def get_joke(joke_url, joke_header):
     '''Get api Joke.'''
-    joke_url = "https://joke3.p.rapidapi.com/v1/joke"
-    joke_header = {
-        'x-rapidapi-host': RAPID_API_HOST,
-        'x-rapidapi-key': RAPID_API_KEY
-    }
-    joke_response = requests.request("GET", joke_url, headers=joke_header)
-    joke_parsed = joke_response.json()
-    fun_joke = (json.dumps(joke_parsed["content"], indent=2))
-    return fun_joke
+    joke_response = requests.get(joke_url, headers=joke_header).json
+    joke = joke_response.get('content')
+    return{KEY_RESPONSE: joke}
+
+
+
+
 #Use fun translate API
 def funtranslate(translate_words):
     '''API translate of words.'''
