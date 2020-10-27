@@ -8,6 +8,7 @@ import flask_sqlalchemy
 import models
 import bot_message as bot
 import bot_build as botcommand
+import urlparse as url_parse
 import urlparse
 from flask import request
 import connected_users
@@ -82,9 +83,8 @@ def on_new_message(data):
         error_message = "There was an error please make sure you are logged in."
         SOCKETIO.emit('messageError', {'errormessage': error_message}, room=room_id)
     else:
-        url_check = urlparse.urlParse(new_message)
-        new_message = url_check.checkURL()
-        DB.session.add(models.Chat(user_name, new_message))
+        new_message_two = url_parse.url_parse(new_message)
+        DB.session.add(models.Chat(user_name, new_message_two))
         DB.session.commit()
     emit_all_messages(MESSAGE_RECEIVED_CHANNEL)
     #code to see if the message was a bot, if was figure out response and send it back

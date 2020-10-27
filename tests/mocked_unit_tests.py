@@ -30,6 +30,34 @@ class MockedBotResponse:
     def __init__(self, bot_response):
         self.bot_response = bot_response
 
+
+# class MockFunTranslate:
+#     def __init__(self, text):
+#         self.text=text
+# class funtranslate_test_case(unittest.TestCase):
+#     def setUp(self):
+#         self.fail_test_params = [{
+#             KEY_INPUT: "this is nice",
+#             KEY_EXPECTED:{
+#                 KEY_RESPONSE:"bisa iksos nice"
+#             }}]
+#     def mocked_requests_get_fun(self, translatewords):
+#         return MockFunTranslate(mock.MagicMock())
+#     def test_get_joke(self):
+#         for test_case in self.fail_test_params:
+#             with mock.patch('requests.get',self.mocked_requests_get_fun):
+#                 fun_response = funtranslate(
+#                     translate_words = test_case[KEY_INPUT])
+            
+    
+            
+#             expected = test_case[KEY_EXPECTED][KEY_RESPONSE]
+                
+            
+#             self.assertNotEqual(fun_response,expected)
+
+
+    
 class MockedGetJokeResponse:
     def __init__(self, text):
         self.text= text
@@ -58,6 +86,6 @@ class get_joke_test_case(unittest.TestCase):
                 
             
             self.assertNotEqual(joke_response,expected)
-
+            
 if __name__ == '__main__':
     unittest.main()
