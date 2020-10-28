@@ -71,13 +71,3 @@ def flipcoins():
     if head_or_tail == 1:
         return "heads"
     return "tails"
-    
-#Concat Messages    
-def concat_messages(all_messages, all_names):
-    list_of_messages = []
-    for current_message in range(len(all_messages)):
-        message_to_append = all_names[current_message]
-        message_to_append += ": "
-        message_to_append += all_messages[current_message]
-        list_of_messages.append(message_to_append)
-    return list_of_messages
