@@ -1,3 +1,4 @@
+/*Google button*/
 import * as React from 'react';
 import { Socket } from './Socket';
 import ReactDOM from 'react-dom';

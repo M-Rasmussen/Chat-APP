@@ -1,3 +1,4 @@
+/*Login Error*/
 import * as React from 'react';
 import { Socket } from './Socket';
 import './styles.css';
