@@ -4,25 +4,25 @@ from rfc3987 import parse
 
 def url_parse(usermessage):
     '''pars the message to see if any url or pic is in it'''
-    messageList = usermessage.split()
+    message_list = usermessage.split()
     picimages = ["jpg", "png", "gif"]
-    rtnMessage = ""
-    for message in messageList:
+    rtn_message = ""
+    for message in message_list:
         try:
             parsedinfo = parse(message, rule="IRI")
             print(parsedinfo.get("scheme"))
             urlpic = parsedinfo.get("path")
             if any(pic in urlpic for pic in picimages):
-                picRtn = "<imgsrc="
-                picRtn += message
-                rtnMessage += picRtn
-                rtnMessage += " "
+                pic_rtn = "<imgsrc="
+                pic_rtn += message
+                rtn_message += pic_rtn
+                rtn_message += " "
             else:
                 atag = "<ahref="
                 atag += message
-                rtnMessage += atag
-                rtnMessage += " "
+                rtn_message += atag
+                rtn_message += " "
         except:
-            rtnMessage += message
-            rtnMessage += " "
-    return rtnMessage
+            rtn_message += message
+            rtn_message += " "
+    return rtn_message
