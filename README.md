@@ -79,6 +79,13 @@ k) create requirments.txt and populate it
 l) create Procfile and enter web: python app.py
 m) Enter the key and host from your env file into your heroku app via the app settings page under config vars
 
+
+
+
+Pip install coverage
+Pip install black
+pip install pylint
+
 GENERAL ISSUES: always make sure your database is running: sudo service postgresql start
 if you have trouble downloading things enter sudo infront of the command
 
