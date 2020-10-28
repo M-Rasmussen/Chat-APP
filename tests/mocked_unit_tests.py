@@ -3,11 +3,12 @@ import sys
 sys.path.append('../')
 import bot_build
 from bot_build import get_joke, funtranslate, bot_command_parse, flipcoins
-from bot_build import JOKE_URL, JOKE_HEADER, KEY_RESPONSE
-
+from bot_build import JOKE_URL, JOKE_HEADER, KEY_RESPONSE, FUN_URL
 #from bot_build import MESSAGE_TO_RETURN, KEY_RESPONSE
 from bot_build import RAPID_API_HOST, RAPID_API_KEY
-
+import unmocked_unit_tests
+from app import APP, DB
+from models import Chat
 import unittest.mock as mock
 from unittest.mock import MagicMock
 from dotenv import load_dotenv
@@ -15,7 +16,9 @@ import requests
 import os
 import json
 from os.path import join, dirname
+import connected_users
 
+LIST_OF_CONNECTED_USERS = connected_users.Connected()
 KEY_INPUT = "input"
 KEY_EXPECTED = "expected"
 
@@ -36,10 +39,11 @@ class MockFunTranslate:
         self.text=text
     
 class MockedGetJokeResponse:
-    def __init__(self, text):
-        self.text= text
+    def __init__(self, status_code, json):
+        self.status_code= status_code
+        self.json=json
         
-class get_joke_test_case(unittest.TestCase):
+class moked_Unit_tests(unittest.TestCase):
     def setUp(self):
         self.fail_test_params_get_joke = [
             {
@@ -73,12 +77,10 @@ class get_joke_test_case(unittest.TestCase):
             expected = test_case[KEY_EXPECTED]
             self.assertNotEqual(joke_response,expected)
             
-    # def mocked_requests_get_fun(self, translatewords):
-    #     return mock.MagicMock()
     # def test_get_funtranslate(self):
     #     for test_case in self.fail_test_params_funtranslate:
-    #         with mock.patch('requests.get',self.mocked_requests_get_fun):
-    #             fun_response = funtranslate(test_case[KEY_INPUT])
+    #         with mock.patch('requests.get',self.mocked_requests_get):
+    #             fun_response = funtranslate(test_case[KEY_INPUT],FUN_URL)
     #         expected = test_case[KEY_EXPECTED][KEY_RESPONSE]
     #         self.assertNotEqual(fun_response,expected)
             
@@ -90,6 +92,13 @@ class get_joke_test_case(unittest.TestCase):
                 coinflip_return=flipcoins()
         expected = test_case[KEY_EXPECTED]
         self.assertEqual(coinflip_return, expected)
-            
-if __name__ == '__main__':
+    # def mocked_check_for_user(self):
+    #     LIST_OF_CONNECTED_USERS.add_user(1234, "name")
+    #     user_name=LIST_OF_CONNECTED_USERS.check_for_user(1234)
+    #     self.assertEqual(user_name,"name")
+    # def mocked_delete_user(self):
+    #     self.assertIsNone(LIST_OF_CONNECTED_USERS.delete_user(1234)
+
+
+if __name__== '__main__':
     unittest.main()

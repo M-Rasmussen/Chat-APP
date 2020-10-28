@@ -18,6 +18,7 @@ JOKE_HEADER = {
     }
 KEY_BOT_RESPONSE = "bot_response"
 KEY_RESPONSE= "response"
+FUN_URL = "http://api.funtranslations.com/translate/valyrian?text="
 
 def bot_command_parse(bot_command_input, bot_command_message):
     '''Get the message that will be added to the database.'''
@@ -38,7 +39,7 @@ def bot_command_parse(bot_command_input, bot_command_message):
             bot_return_message = x.get(KEY_RESPONSE)
     else:
         if bot_command_input == "funtranslate":
-            bot_return_message = funtranslate(bot_command_message)
+            bot_return_message = funtranslate(bot_command_message, FUN_URL)
         elif bot_command_input == "coin":
             bot_return_message = flipcoins()
     return bot_return_message
@@ -55,9 +56,9 @@ def get_joke(joke_url, joke_header):
 
 
 #Use fun translate API
-def funtranslate(translate_words):
+def funtranslate(translate_words, FUN_URL):
     '''API translate of words.'''
-    funurl = "http://api.funtranslations.com/translate/valyrian?text="
+    funurl = FUN_URL
     funurl += translate_words
     funresponse = requests.get(funurl)
     funreturn = funresponse.json()
@@ -71,3 +72,13 @@ def flipcoins():
     if head_or_tail == 1:
         return "heads"
     return "tails"
+
+def concat_messages(all_messages, all_names):
+    '''concat all the messages'''
+    arrayList = []
+    for x in range(len(all_messages)):
+        messageOp=all_names[x]
+        messageOp+= ": "
+        messageOp+=all_messages[x]
+        arrayList.append(messageOp)
+    return arrayList
