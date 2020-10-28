@@ -117,6 +117,12 @@ class BotbuildTestCase(unittest.TestCase):
                 KEY_EXPECTED:['matt: abcd', 'frank: message2']
                 }
             ]
+        self.test_fun_translate_concat = [
+            {
+                KEY_INPUT: "http://api.funtranslations.com/translate/valyrian?text=",
+                KEY_EXPECTED:"http://api.funtranslations.com/translate/valyrian?text=This is nice"
+                }
+            ]
 
     def test_parse_message_success(self):
         '''Test if function valid_message is correct with correct input'''
@@ -183,6 +189,14 @@ class BotbuildTestCase(unittest.TestCase):
         response = LIST_OF_CONNECTED_USERS.number_of_users()
         expected = 1
         self.assertEqual(response,expected)
+    def fun_translate_concat(self):
+        '''Test if funciton concat funtranslate'''
+        for test in self.test_fun_translate_concat:
+            response = bot_command_parse.fun_translate_concat(test[KEY_INPUT])
+            expected = test[KEY_EXPECTED]
+            self.assertEqual(response,expected)
+
+
 
 if __name__ == '__main__':
     unittest.main()

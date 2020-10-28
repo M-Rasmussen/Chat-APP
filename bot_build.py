@@ -37,7 +37,7 @@ def bot_command_parse(bot_command_input, bot_command_message):
             bot_return_message = x.get(KEY_RESPONSE)
     else:
         if bot_command_input == "funtranslate":
-            bot_return_message = funtranslate(bot_command_message, FUN_URL)
+            bot_return_message = funtranslate(bot_command_message)
         elif bot_command_input == "coin":
             bot_return_message = flipcoins()
     return bot_return_message
@@ -51,13 +51,17 @@ def get_joke(joke_url, joke_header):
 
 
 # Use fun translate API
-def funtranslate(translate_words, FUN_URL):
+def fun_translate_concat(translate_words):
+    fun_url= FUN_URL
+    fun_url= fun_url+translate_words
+    return fun_url
+
+
+def funtranslate(translate_words):
     """API translate of words."""
-    funurl = FUN_URL
-    funurl += translate_words
-    funresponse = requests.get(funurl)
-    funreturn = funresponse.json()
-    fun_pirate = json.dumps(funreturn["contents"]["translated"], indent=2)
+    funurl = fun_translate_concat(translate_words)
+    funresponse = requests.get(funurl).json()
+    fun_pirate = funresponse['contents']['translated']
     return fun_pirate
 
 

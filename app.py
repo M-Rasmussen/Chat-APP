@@ -5,7 +5,7 @@ import flask_socketio
 from os.path import join, dirname
 from dotenv import load_dotenv
 import flask_sqlalchemy
-import models
+
 import bot_message as bot
 import bot_build as botcommand
 import urlparse as url_parse
@@ -27,21 +27,26 @@ load_dotenv(DOTENV_PATH)
 
 DATABASE_URI = os.environ['DATABASE_URL']
 
-
 APP.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 
-DB = flask_sqlalchemy.SQLAlchemy(APP)
-DB.init_app(APP)
-DB.app = APP
+DB = flask_sqlalchemy.SQLAlchemy()
+def init_DB(APP):
+    DB.init_app(APP)
+    DB.app = APP
+    DB.create_all()
+    DB.session.commit()
 
-DB.create_all()
-DB.session.commit()
+import models
 
+def get_all_messages_from_db():
+    return [db_message.message for db_message in DB.session.query(models.Chat).all()]
+def get_all_names_from_db():
+    return [db_name.name for db_name in DB.session.query(models.Chat).all()]
 
 def emit_all_messages(channel):
     '''Send all of the messages out.'''
-    db_all_messages = [db_message.message for db_message in DB.session.query(models.Chat).all()]
-    db_all_names = [db_name.name for db_name in DB.session.query(models.Chat).all()]
+    db_all_messages = get_all_messages_from_db()
+    db_all_names = get_all_names_from_db()
     list_of_messages = botcommand.concat_messages(db_all_messages, db_all_names)
     SOCKETIO.emit(channel, {
         'allMessages': list_of_messages
@@ -107,6 +112,7 @@ def index():
 
 
 if __name__ == '__main__':
+    init_DB(APP)
     SOCKETIO.run(
         APP,
         host=os.getenv('IP', '0.0.0.0'),
