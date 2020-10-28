@@ -39,16 +39,12 @@ DB.session.commit()
 
 
 
+
 def emit_all_messages(channel):
     '''Send all of the messages out.'''
     db_all_messages = [db_message.message for db_message in DB.session.query(models.Chat).all()]
     db_all_names = [db_name.name for db_name in DB.session.query(models.Chat).all()]
-    list_of_messages = []
-    for current_message in range(len(db_all_messages)):
-        message_to_append = db_all_names[current_message]
-        message_to_append += ": "
-        message_to_append += db_all_messages[current_message]
-        list_of_messages.append(message_to_append)
+    list_of_messages = botcommand.concat_messages(db_all_messages, db_all_names)
     SOCKETIO.emit(channel, {
         'allMessages': list_of_messages
     })

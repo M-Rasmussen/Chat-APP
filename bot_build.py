@@ -41,8 +41,7 @@ def bot_command_parse(bot_command_input, bot_command_message):
             bot_return_message = funtranslate(bot_command_message)
         elif bot_command_input == "coin":
             bot_return_message = flipcoins()
-    return{
-        KEY_BOT_RESPONSE: bot_return_message}
+    return bot_return_message
 
 
 
@@ -72,3 +71,13 @@ def flipcoins():
     if head_or_tail == 1:
         return "heads"
     return "tails"
+    
+#Concat Messages    
+def concat_messages(all_messages, all_names):
+    list_of_messages = []
+    for current_message in range(len(all_messages)):
+        message_to_append = all_names[current_message]
+        message_to_append += ": "
+        message_to_append += all_messages[current_message]
+        list_of_messages.append(message_to_append)
+    return list_of_messages
