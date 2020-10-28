@@ -5,7 +5,7 @@ import bot_build
 import app
 from bot_build import get_joke, funtranslate, bot_command_parse, flipcoins
 from bot_build import JOKE_URL, JOKE_HEADER, KEY_RESPONSE, FUN_URL
-from app import emit_num_users, emit_all_messages
+from app import emit_num_users, emit_all_messages,add_to_db, on_disconnect
 from app import LIST_OF_CONNECTED_USERS, MESSAGE_RECEIVED_CHANNEL
 # from bot_build import MESSAGE_TO_RETURN, KEY_RESPONSE
 from bot_build import RAPID_API_HOST, RAPID_API_KEY
@@ -43,6 +43,10 @@ class MockedGetJokeResponse:
     def __init__(self, status_code, json):
         self.status_code = status_code
         self.json = json
+class mocked_Data_base:
+    def __init__(self, name, message):
+        self.name = name
+        self.message= message
 
 
 class moked_Unit_tests(unittest.TestCase):
@@ -85,8 +89,12 @@ class moked_Unit_tests(unittest.TestCase):
         return ['abcd', 'efg']
     
     def mocked_get_all_names_from_db(self):
-        return ['matt', 'frank']
-
+        return ['matt','frank']
+    def mocked_add_to_db(self, username, message):
+        return None
+    def mocked_delete_user(self,userid):
+        return None
+    
     def test_get_joke(self):
         for test_case in self.fail_test_params_get_joke:
             with mock.patch("requests.get", self.mocked_requests_get_joke):
@@ -121,8 +129,16 @@ class moked_Unit_tests(unittest.TestCase):
                 allMessages=emit_all_messages(MESSAGE_RECEIVED_CHANNEL)
         self.assertNotEqual(allMessages, ['matt: abcd', 'frank: efg'])
     
-
-
+    def test_on_new_google_user(self):
+        with mock.patch('app.LIST_OF_CONNECTED_USERS.add_user'):
+            with mock.patch("app.emit_num_users",self.mocked_emit_num_users):
+                number_users= emit_num_users(LIST_OF_CONNECTED_USERS)
+        self.assertNotEqual= (number_users, 0)
+    def test_on_disconnect(self):
+        with mock.patch("app.LIST_OF_CONNECTED_USERS.delete_user", self.mocked_delete_user):
+            with mock.patch("app.emit_num_users",self.mocked_emit_num_users):
+                number_users= emit_num_users(LIST_OF_CONNECTED_USERS)
+        self.assertNotEqual= (number_users, 0)
 
 if __name__ == "__main__":
     unittest.main()

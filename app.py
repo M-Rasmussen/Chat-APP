@@ -42,6 +42,9 @@ def get_all_messages_from_db():
     return [db_message.message for db_message in DB.session.query(models.Chat).all()]
 def get_all_names_from_db():
     return [db_name.name for db_name in DB.session.query(models.Chat).all()]
+def add_to_db(user_name, message):
+    DB.session.add(models.Chat(user_name, message))
+    DB.session.commit()
 
 def emit_all_messages(channel):
     '''Send all of the messages out.'''
@@ -83,16 +86,12 @@ def on_new_message(data):
         SOCKETIO.emit('messageError', {'errormessage': error_message}, room=room_id)
     else:
         new_message_two = url_parse.url_parse(new_message)
-        DB.session.add(models.Chat(user_name, new_message_two))
-        DB.session.commit()
+        add_to_db(user_name,new_message_two)
     emit_all_messages(MESSAGE_RECEIVED_CHANNEL)
     #code to see if the message was a bot, if was figure out response and send it back
     bot_message = bot.valid_message(new_message)
     if bot_message["is_bot"]==True:
-        DB.session.add(models.Chat('bot',\
-        botcommand.bot_command_parse(bot_message["bot_command"],\
-        bot_message["message"])))
-        DB.session.commit()
+        add_to_db('bot',botcommand.bot_command_parse(bot_message["bot_command"], bot_message["message"]))
         emit_all_messages(MESSAGE_RECEIVED_CHANNEL)
 
 @SOCKETIO.on('new google user')
