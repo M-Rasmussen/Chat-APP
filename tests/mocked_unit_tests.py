@@ -5,12 +5,14 @@ import bot_build
 import app
 from bot_build import get_joke, funtranslate, bot_command_parse, flipcoins
 from bot_build import JOKE_URL, JOKE_HEADER, KEY_RESPONSE, FUN_URL
-from app import emit_num_users, emit_all_messages,add_to_db, on_disconnect
-from app import LIST_OF_CONNECTED_USERS, MESSAGE_RECEIVED_CHANNEL
-# from bot_build import MESSAGE_TO_RETURN, KEY_RESPONSE
+from app import emit_num_users, emit_all_messages,add_to_db, on_disconnect, on_new_message
+from app import LIST_OF_CONNECTED_USERS, MESSAGE_RECEIVED_CHANNEL, url_parse, check_online_user
 from bot_build import RAPID_API_HOST, RAPID_API_KEY
 import unmocked_unit_tests
 import unittest.mock as mock
+import urlparse
+import connected_users
+from urlparse import url_parse
 from unittest.mock import MagicMock
 from dotenv import load_dotenv
 import requests
@@ -94,6 +96,8 @@ class moked_Unit_tests(unittest.TestCase):
         return None
     def mocked_delete_user(self,userid):
         return None
+    def mocked_url_parse(self, message):
+        return ""
     
     def test_get_joke(self):
         for test_case in self.fail_test_params_get_joke:
@@ -139,6 +143,14 @@ class moked_Unit_tests(unittest.TestCase):
             with mock.patch("app.emit_num_users",self.mocked_emit_num_users):
                 number_users= emit_num_users(LIST_OF_CONNECTED_USERS)
         self.assertNotEqual= (number_users, 0)
-
+    def test_check_url(self):
+        with mock.patch('urlparse.url_parse',self.mocked_url_parse):
+            message=url_parse("this stuff")
+        self.assertNotEqual=(message, "abced")
+        
+    def test_check_Online_user(self):
+        with mock.patch('app.LIST_OF_CONNECTED_USERS.check_for_user', self.mocked_check_for_user):
+            user_check=check_online_user(1)
+        self.assertNotEqual(user_check, "tommy")
 if __name__ == "__main__":
     unittest.main()

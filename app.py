@@ -39,12 +39,17 @@ def init_DB(APP):
 import models
 
 def get_all_messages_from_db():
+    '''get all messages from database'''
     return [db_message.message for db_message in DB.session.query(models.Chat).all()]
 def get_all_names_from_db():
+    '''get all names of database'''
     return [db_name.name for db_name in DB.session.query(models.Chat).all()]
 def add_to_db(user_name, message):
+    '''add things to database'''
     DB.session.add(models.Chat(user_name, message))
     DB.session.commit()
+def check_online_user(user_id):
+    return LIST_OF_CONNECTED_USERS.check_for_user(user_id)
 
 def emit_all_messages(channel):
     '''Send all of the messages out.'''
@@ -78,12 +83,11 @@ def on_new_message(data):
     ''' Get new message from person parse it for url,
      make sure the person is online, and make sure its
      a bot message or not.'''
-    room_id = request.sid
     new_message = data['message']['message']
-    user_name = LIST_OF_CONNECTED_USERS.check_for_user(room_id)
+    user_name = check_online_user(request.sid)
     if user_name == "":
         error_message = "There was an error please make sure you are logged in."
-        SOCKETIO.emit('messageError', {'errormessage': error_message}, room=room_id)
+        SOCKETIO.emit('messageError', {'errormessage': error_message}, room=request.sid)
     else:
         new_message_two = url_parse.url_parse(new_message)
         add_to_db(user_name,new_message_two)
