@@ -1,9 +1,9 @@
-'''parse the file to see if there is any url or picture in it'''
+"""parse the file to see if there is any url or picture in it"""
 from rfc3987 import parse
 
 
 def url_parse(usermessage):
-    '''pars the message to see if any url or pic is in it'''
+    """pars the message to see if any url or pic is in it"""
     messageList = usermessage.split()
     picimages = ["jpg", "png", "gif"]
     rtnMessage = ""
