@@ -1,7 +1,6 @@
 """Unmocked unittesting"""
 import unittest
 import sys
-
 sys.path.append("../")
 import bot_message as valid_message
 from bot_message import KEY_IS_BOT, KEY_BOT_COMMAND, KEY_MESSAGE
