@@ -38,8 +38,6 @@ DB.create_all()
 DB.session.commit()
 
 
-
-
 def emit_all_messages(channel):
     '''Send all of the messages out.'''
     db_all_messages = [db_message.message for db_message in DB.session.query(models.Chat).all()]

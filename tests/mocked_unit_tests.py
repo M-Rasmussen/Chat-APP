@@ -1,6 +1,5 @@
 import unittest
 import sys
-
 sys.path.append("../")
 import bot_build
 from bot_build import get_joke, funtranslate, bot_command_parse, flipcoins
@@ -9,8 +8,6 @@ from bot_build import JOKE_URL, JOKE_HEADER, KEY_RESPONSE, FUN_URL
 # from bot_build import MESSAGE_TO_RETURN, KEY_RESPONSE
 from bot_build import RAPID_API_HOST, RAPID_API_KEY
 import unmocked_unit_tests
-from app import APP, DB
-from models import Chat
 import unittest.mock as mock
 from unittest.mock import MagicMock
 from dotenv import load_dotenv
@@ -19,7 +16,6 @@ import os
 import json
 from os.path import join, dirname
 import connected_users
-
 LIST_OF_CONNECTED_USERS = connected_users.Connected()
 KEY_INPUT = "input"
 KEY_EXPECTED = "expected"
@@ -62,6 +58,7 @@ class moked_Unit_tests(unittest.TestCase):
     def mocked_requests_get(self, joke_url, headers):
         return mock.MagicMock()
 
+
     def test_get_joke(self):
         for test_case in self.fail_test_params_get_joke:
             with mock.patch("requests.get", self.mocked_requests_get):
@@ -86,7 +83,14 @@ class moked_Unit_tests(unittest.TestCase):
         expected = test_case[KEY_EXPECTED]
         self.assertEqual(coinflip_return, expected)
 
-    # def mocked_check_for_user(self):
+
+    @mock.patch('app.flask')
+    def test_print_request_side(self, mock_flask):
+        mock_flask.request.sid = 'mock_sid'
+        result= app.print_request_sid()
+        self.assertEqual(result,'mock_sid')
+    # def mocked_check_for_user(self):      
+
     #     LIST_OF_CONNECTED_USERS.add_user(1234, "name")
     #     user_name=LIST_OF_CONNECTED_USERS.check_for_user(1234)
     #     self.assertEqual(user_name,"name")

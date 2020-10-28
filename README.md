@@ -85,6 +85,8 @@ m) Enter the key and host from your env file into your heroku app via the app se
 Pip install coverage
 Pip install black
 pip install pylint
+pip install requests_mock
+pip install bag
 
 GENERAL ISSUES: always make sure your database is running: sudo service postgresql start
 if you have trouble downloading things enter sudo infront of the command
