@@ -1,4 +1,4 @@
-'''all functions that are going to be called'''
+"""all functions that are going to be called"""
 from os.path import join, dirname
 from dotenv import load_dotenv
 import random
@@ -7,21 +7,19 @@ import os
 import requests
 
 
-DOTENV_PATH = join(dirname(__file__), 'project2.env')
+DOTENV_PATH = join(dirname(__file__), "project2.env")
 load_dotenv(DOTENV_PATH)
-JOKE_URL= 'https://joke3.p.rapidapi.com/v1/joke'
-RAPID_API_HOST = os.environ['RAPID_URL_HOST']
-RAPID_API_KEY = os.environ['RAPID_URL_KEY']
-JOKE_HEADER = {
-    'x-rapidapi-host': RAPID_API_HOST,
-    'x-rapidapi-key': RAPID_API_KEY
-    }
+JOKE_URL = "https://joke3.p.rapidapi.com/v1/joke"
+RAPID_API_HOST = os.environ["RAPID_URL_HOST"]
+RAPID_API_KEY = os.environ["RAPID_URL_KEY"]
+JOKE_HEADER = {"x-rapidapi-host": RAPID_API_HOST, "x-rapidapi-key": RAPID_API_KEY}
 KEY_BOT_RESPONSE = "bot_response"
-KEY_RESPONSE= "response"
+KEY_RESPONSE = "response"
 FUN_URL = "http://api.funtranslations.com/translate/valyrian?text="
 
+
 def bot_command_parse(bot_command_input, bot_command_message):
-    '''Get the message that will be added to the database.'''
+    """Get the message that will be added to the database."""
     bot_return_message = "I did not understand you please enter !! help for all of \
     the inputs I respond to"
     if bot_command_message == "":
@@ -35,7 +33,7 @@ def bot_command_parse(bot_command_input, bot_command_message):
             !! joke and I will tell you a joke. !! coin flip will result me \
             in flipping a coin and I will tell you the results. "
         elif bot_command_input == "joke":
-            x=get_joke(JOKE_URL,JOKE_HEADER)
+            x = get_joke(JOKE_URL, JOKE_HEADER)
             bot_return_message = x.get(KEY_RESPONSE)
     else:
         if bot_command_input == "funtranslate":
@@ -45,40 +43,39 @@ def bot_command_parse(bot_command_input, bot_command_message):
     return bot_return_message
 
 
-
 def get_joke(joke_url, joke_header):
-    '''Get api Joke.'''
+    """Get api Joke."""
     joke_response = requests.get(joke_url, headers=joke_header).json()
-    joke = joke_response.get('content')
-    return{KEY_RESPONSE: joke}
+    joke = joke_response.get("content")
+    return {KEY_RESPONSE: joke}
 
 
-
-
-#Use fun translate API
+# Use fun translate API
 def funtranslate(translate_words, FUN_URL):
-    '''API translate of words.'''
+    """API translate of words."""
     funurl = FUN_URL
     funurl += translate_words
     funresponse = requests.get(funurl)
     funreturn = funresponse.json()
-    fun_pirate = (json.dumps(funreturn["contents"]["translated"], indent=2))
+    fun_pirate = json.dumps(funreturn["contents"]["translated"], indent=2)
     return fun_pirate
+
 
 # FOR COIN FLIP
 def flipcoins():
-    '''coin flips'''
+    """coin flips"""
     head_or_tail = random.randint(0, 1)
     if head_or_tail == 1:
         return "heads"
     return "tails"
 
+
 def concat_messages(all_messages, all_names):
-    '''concat all the messages'''
+    """concat all the messages"""
     arrayList = []
     for x in range(len(all_messages)):
-        messageOp=all_names[x]
-        messageOp+= ": "
-        messageOp+=all_messages[x]
+        messageOp = all_names[x]
+        messageOp += ": "
+        messageOp += all_messages[x]
         arrayList.append(messageOp)
     return arrayList
