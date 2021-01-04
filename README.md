@@ -1,4 +1,4 @@
-App can be found at https://cryptic-wildwood-42908.herokuapp.com/ 
+App can be found at https://rasmussenchatapp.herokuapp.com/
 
 cd ~/environment && git clone https://github.com/NJIT-CS490/project2-m1-mtr26
 
