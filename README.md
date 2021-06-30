@@ -1,3 +1,4 @@
+(Logine does not work)
 App can be found at https://rasmussenchatapp.herokuapp.com/
 
 cd ~/environment && git clone https://github.com/NJIT-CS490/project2-m1-mtr26
